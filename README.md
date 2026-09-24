@@ -64,7 +64,7 @@ The project follows a layered architecture with an MVI-style presentation layer.
                ▼
 ┌─────────────────────────────┐
 │         Repository          │
-│     Single Data Access       │
+│     Single Data Access      │
 │          Point              │
 └────────────┬───────┬────────┘
              │       │
