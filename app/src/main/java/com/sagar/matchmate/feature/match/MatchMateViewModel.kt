@@ -5,7 +5,7 @@ import com.sagar.matchmate.core.network.NetworkMonitor
 import com.sagar.matchmate.domain.model.MatchStatus
 import com.sagar.matchmate.domain.repository.MatchRepository
 import kotlinx.coroutines.flow.collectLatest
- import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch
 
 class MatchMateViewModel(
     private val repository: MatchRepository,
@@ -13,7 +13,6 @@ class MatchMateViewModel(
 ) : BaseViewModel<MatchMateIntent, MatchMateState, MatchMateEffect>(
     initialState = MatchMateState()
 ) {
-
     init {
         observeMatches()
         observeNetwork()
@@ -24,29 +23,23 @@ class MatchMateViewModel(
         scope.launch {
             networkMonitor.isConnected
                 .collectLatest { isConnected ->
-
                     val wasOffline = uiState.value.isOffline
-
                     setState {
                         copy(
                             isOffline = !isConnected
                         )
                     }
-
-                    /*
-                     * Connection has just returned.
-                     */
                     if (isConnected && wasOffline) {
                         syncPendingActions()
                     }
                 }
         }
     }
+
     private suspend fun syncPendingActions() {
         runCatching {
             repository.syncPendingActions()
         }.onFailure { throwable ->
-
             sendEffect(
                 MatchMateEffect.ShowSnackbar(
                     throwable.message ?: "Unable to sync pending changes."
@@ -54,6 +47,7 @@ class MatchMateViewModel(
             )
         }
     }
+
     private fun observeMatches() {
         scope.launch {
             repository.observeMatches()
@@ -69,11 +63,35 @@ class MatchMateViewModel(
 
     override suspend fun handleIntent(intent: MatchMateIntent) {
         when (intent) {
-            is MatchMateIntent.SelectTab -> selectTab(intent.tab)
+            is MatchMateIntent.SelectTab -> {
+                selectTab(intent.tab)
+            }
 
-            is MatchMateIntent.SelectGenderFilter -> selectGenderFilter(intent.filter)
+            is MatchMateIntent.SelectGenderFilter -> {
+                selectGenderFilter(
+                    intent.filter
+                )
+            }
 
-            is MatchMateIntent.UndoMatchAction -> undoMatchAction(intent.matchId)
+            is MatchMateIntent.UndoMatchAction -> {
+                undoMatchAction(
+                    intent.matchId
+                )
+            }
+
+            is MatchMateIntent.AcceptMatch -> {
+                updateMatchStatus(
+                    matchId = intent.matchId,
+                    status = MatchStatus.ACCEPTED
+                )
+            }
+
+            is MatchMateIntent.DeclineMatch -> {
+                updateMatchStatus(
+                    matchId = intent.matchId,
+                    status = MatchStatus.DECLINED
+                )
+            }
 
             MatchMateIntent.LoadInitialMatches -> {
                 loadInitialMatches()
@@ -91,19 +109,6 @@ class MatchMateViewModel(
                 refresh()
             }
 
-            is MatchMateIntent.AcceptMatch -> {
-                updateMatchStatus(
-                    matchId = intent.matchId,
-                    status = MatchStatus.ACCEPTED
-                )
-            }
-
-            is MatchMateIntent.DeclineMatch -> {
-                updateMatchStatus(
-                    matchId = intent.matchId,
-                    status = MatchStatus.DECLINED
-                )
-            }
         }
     }
 
@@ -211,6 +216,7 @@ class MatchMateViewModel(
             copy(genderFilter = filter)
         }
     }
+
     private suspend fun loadNextPage() {
         val currentPagination = uiState.value.pagination
 

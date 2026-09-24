@@ -81,9 +81,7 @@ fun MatchMateScreen(
      */
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { effect ->
-
             when (effect) {
-
                 is MatchMateEffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = effect.message,
@@ -97,7 +95,6 @@ fun MatchMateScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MatchMateBackground,
-
         topBar = {
             MatchMateTopBar(
                 selectedTab = uiState.selectedTab,
@@ -109,30 +106,20 @@ fun MatchMateScreen(
                 }
             )
         },
-
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState
             )
         }
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
-            /*
-             * Offline indicator
-             */
             if (uiState.isOffline) {
                 OfflineBanner()
             }
-
-            /*
-             * Main tabs
-             */
             MatchTabs(
                 selectedTab = uiState.selectedTab,
                 acceptedCount = uiState.acceptedCount,
@@ -143,10 +130,7 @@ fun MatchMateScreen(
                     )
                 }
             )
-
-            /*
-             * Gender filters
-             */
+            // Gender filters
             GenderFilters(
                 selectedFilter = uiState.genderFilter,
                 onFilterSelected = { filter ->
@@ -155,21 +139,12 @@ fun MatchMateScreen(
                     )
                 }
             )
-
-            /*
-             * Initial loading
-             */
             if (
                 uiState.pagination.isInitialLoading &&
                 uiState.matches.isEmpty()
             ) {
                 InitialLoading()
-            }
-
-            /*
-             * Initial error
-             */
-            else if (
+            } else if (
                 uiState.initialError != null &&
                 uiState.matches.isEmpty()
             ) {
@@ -183,16 +158,12 @@ fun MatchMateScreen(
                     }
                 )
             }
-
-            /*
-             * Matches
-             */
+            //Matches
             else {
                 MatchList(
                     matches = uiState.selectedMatches,
                     pagination = uiState.pagination,
                     selectedTab = uiState.selectedTab,
-
                     onAccept = { matchId ->
                         viewModel.sendIntent(
                             MatchMateIntent.AcceptMatch(matchId)
@@ -248,23 +219,19 @@ private fun MatchMateTopBar(
 
     TopAppBar(
         modifier = Modifier.statusBarsPadding(),
-
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MatchMateBackground,
             titleContentColor = MatchMateTextPrimary,
             navigationIconContentColor = MatchMateTextPrimary,
             actionIconContentColor = MatchMateTextPrimary
         ),
-
         title = {
             Column {
-
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
                     color = MatchMateTextPrimary
                 )
-
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
@@ -272,23 +239,18 @@ private fun MatchMateTopBar(
                 )
             }
         },
-
         actions = {
             IconButton(
                 onClick = onRefresh,
                 enabled = !isRefreshing
             ) {
-
                 if (isRefreshing) {
-
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         color = MatchMatePink,
                         strokeWidth = 2.dp
                     )
-
                 } else {
-
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = "Refresh matches",
@@ -309,58 +271,42 @@ private fun MatchTabs(
 ) {
     PrimaryTabRow(
         selectedTabIndex = selectedTab.ordinal,
-
         containerColor = MatchMateBackground,
-
         contentColor = MatchMatePink,
-
         divider = {
             androidx.compose.material3.HorizontalDivider(
                 color = MatchMateDivider
             )
         },
-
         indicator = {
             TabRowDefaults.PrimaryIndicator(
                 modifier = Modifier
                     .tabIndicatorOffset(selectedTab.ordinal),
-
                 width = 42.dp,
-
                 color = MatchMatePink
             )
         }
     ) {
-
         Tab(
             selected = selectedTab == MatchTab.DISCOVER,
-
             onClick = {
                 onTabSelected(MatchTab.DISCOVER)
             },
-
             selectedContentColor = MatchMatePink,
-
             unselectedContentColor = MatchMateTextSecondary,
-
             text = {
                 Text(
                     text = "Discover"
                 )
             }
         )
-
         Tab(
             selected = selectedTab == MatchTab.ACCEPTED,
-
             onClick = {
                 onTabSelected(MatchTab.ACCEPTED)
             },
-
             selectedContentColor = MatchMatePink,
-
             unselectedContentColor = MatchMateTextSecondary,
-
             text = {
                 Text(
                     text = if (acceptedCount > 0) {
@@ -371,18 +317,13 @@ private fun MatchTabs(
                 )
             }
         )
-
         Tab(
             selected = selectedTab == MatchTab.DECLINED,
-
             onClick = {
                 onTabSelected(MatchTab.DECLINED)
             },
-
             selectedContentColor = MatchMatePink,
-
             unselectedContentColor = MatchMateTextSecondary,
-
             text = {
                 Text(
                     text = if (declinedCount > 0) {
@@ -408,43 +349,29 @@ private fun GenderFilters(
                 horizontal = 16.dp,
                 vertical = 12.dp
             ),
-
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
         GenderFilter.entries.forEach { filter ->
-
             val selected = selectedFilter == filter
-
             FilterChip(
                 selected = selected,
-
                 onClick = {
                     onFilterSelected(filter)
                 },
-
                 colors = FilterChipDefaults.filterChipColors(
-
                     containerColor = MatchMateSurface,
-
                     labelColor = MatchMateTextSecondary,
-
                     selectedContainerColor = MatchMatePinkSoft,
-
                     selectedLabelColor = MatchMatePinkDark,
-
                     disabledContainerColor = MatchMateSurface,
-
                     disabledLabelColor = MatchMateTextSecondary
                 ),
-
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = selected,
                     borderColor = MatchMateDivider,
                     selectedBorderColor = MatchMatePink
                 ),
-
                 label = {
                     Text(
                         text = when (filter) {
@@ -463,19 +390,15 @@ private fun GenderFilters(
 private fun OfflineBanner() {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-
         color = MatchMateYellowSoft
     ) {
         Text(
             text = "You're offline • Showing saved matches",
-
             modifier = Modifier.padding(
                 horizontal = 16.dp,
                 vertical = 9.dp
             ),
-
             style = MaterialTheme.typography.bodySmall,
-
             color = MatchMateTextPrimary
         )
     }
@@ -487,17 +410,14 @@ private fun InitialLoading() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             CircularProgressIndicator(
                 color = MatchMatePink,
                 strokeWidth = 3.dp
             )
-
             Text(
                 text = "Finding matches...",
 
@@ -518,15 +438,12 @@ private fun ErrorState(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-
         contentAlignment = Alignment.Center
     ) {
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             Surface(
                 shape = MaterialTheme.shapes.large,
                 color = MatchMateErrorSoft
@@ -541,26 +458,18 @@ private fun ErrorState(
                     color = MatchMateError
                 )
             }
-
             Text(
                 text = "Something went wrong",
-
                 style = MaterialTheme.typography.titleMedium,
-
                 color = MatchMateTextPrimary
             )
-
             Text(
                 text = message,
-
                 style = MaterialTheme.typography.bodyMedium,
-
                 color = MatchMateTextSecondary
             )
-
             Button(
                 onClick = onRetry,
-
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MatchMatePink,
                     contentColor = MatchMateSurface

@@ -1,14 +1,11 @@
 package com.sagar.matchmate.data.remote
 
+import com.sagar.matchmate.data.remote.RemoteConfig.BASE_URL
 import com.sagar.matchmate.data.remote.api.RandomUserApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitProvider {
-
-    private const val BASE_URL =
-        "https://randomuser.me/"
-
     private val retrofit: Retrofit by lazy {
 
         Retrofit.Builder()
@@ -18,7 +15,6 @@ object RetrofitProvider {
             )
             .build()
     }
-
     val randomUserApi: RandomUserApi by lazy {
 
         retrofit.create(

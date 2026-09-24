@@ -1,10 +1,15 @@
 package com.sagar.matchmate.feature.match.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,8 +26,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,8 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,14 +69,11 @@ import com.sagar.matchmate.ui.theme.MatchMateRedSoft
 import com.sagar.matchmate.ui.theme.MatchMateSurface
 import com.sagar.matchmate.ui.theme.MatchMateTextPrimary
 import com.sagar.matchmate.ui.theme.MatchMateTextSecondary
-import com.sagar.matchmate.ui.theme.MatchMateYellow
 import com.sagar.matchmate.ui.theme.MatchMateYellowSoft
 
 @Composable
 fun MatchCard(
-    match: Match,
-    onAccept: () -> Unit,
-    onDecline: () -> Unit
+    match: Match, onAccept: () -> Unit, onDecline: () -> Unit
 ) {
     var showContactInfo by remember(match.id) {
         mutableStateOf(false)
@@ -79,136 +83,86 @@ fun MatchCard(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(20.dp),
-                clip = false
-            )
-            .animateContentSize(
-                animationSpec = tween(250)
-            ),
-
-        shape = RoundedCornerShape(20.dp),
-
-        colors = CardDefaults.cardColors(
+                elevation = 8.dp, shape = RoundedCornerShape(20.dp), clip = false
+            ), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(
             containerColor = MatchMateSurface
-        ),
-
-        border = BorderStroke(
-            width = 1.dp,
-            color = MatchMateDivider
-        )
+        ), border = BorderStroke(1.dp, MatchMateDivider)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                )
+        ) {
 
-        Column {
-
-            /*
-             * Profile image
-             */
+            //Profile image
             AsyncImage(
                 model = match.imageUrl,
-
-                contentDescription =
-                    "${match.firstName} ${match.lastName}",
-
+                contentDescription = "${match.firstName} ${match.lastName}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(280.dp)
                     .clip(
                         RoundedCornerShape(
-                            topEnd = 20.dp, topStart = 20.dp
+                            topStart = 20.dp, topEnd = 20.dp
                         )
                     )
                     .background(
                         MatchMatePinkSoft
                     ),
-
                 contentScale = ContentScale.Crop
             )
-
             Column(
                 modifier = Modifier.padding(18.dp)
             ) {
-
-                /*
-                 * Name + status
-                 */
+                //Name + status
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-
-                    verticalAlignment =
-                        Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text =
-                                "${match.firstName} ${match.lastName}, ${match.age}",
-
-                            style =
-                                MaterialTheme.typography.titleLarge,
-
-                            fontWeight =
-                                FontWeight.SemiBold,
-
+                            text = "${match.firstName} ${match.lastName}, ${match.age}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
                             color = MatchMateTextPrimary
                         )
-
                         Spacer(
                             modifier = Modifier.height(5.dp)
                         )
-
                         Row(
-                            verticalAlignment =
-                                Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-
                             Icon(
-                                imageVector =
-                                    Icons.Default.LocationOn,
-
+                                imageVector = Icons.Default.LocationOn,
                                 contentDescription = null,
-
-                                modifier =
-                                    Modifier.size(17.dp),
-
+                                modifier = Modifier.size(17.dp),
                                 tint = MatchMatePink
                             )
-
                             Text(
-                                text =
-                                    "${match.city}, ${match.country}",
-
-                                modifier =
-                                    Modifier.padding(start = 4.dp),
-
-                                style =
-                                    MaterialTheme.typography.bodyMedium,
-
+                                text = "${match.city}, ${match.country}",
+                                modifier = Modifier.padding(start = 4.dp),
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MatchMateTextSecondary
                             )
                         }
                     }
-
                     StatusChip(
                         status = match.status
                     )
                 }
-
                 Spacer(
                     modifier = Modifier.height(14.dp)
                 )
-
-                /*
-                 * Contact information
-                 */
+                // Contact information toggle
                 AssistChip(
                     onClick = {
                         showContactInfo = !showContactInfo
                     },
-
                     label = {
                         Text(
                             text = if (showContactInfo) {
@@ -218,162 +172,125 @@ fun MatchCard(
                             }
                         )
                     },
-
+                    leadingIcon = {
+                        AnimatedContent(
+                            targetState = showContactInfo, transitionSpec = {
+                                fadeIn(
+                                    animationSpec = tween(120)
+                                ) togetherWith fadeOut(
+                                    animationSpec = tween(80)
+                                )
+                            }, label = "contactIcon"
+                        ) { expanded ->
+                            Icon(
+                                imageVector = if (expanded) {
+                                    Icons.Default.ExpandLess
+                                } else {
+                                    Icons.Default.ExpandMore
+                                },
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = MatchMatePinkSoft,
-                        labelColor = MatchMatePinkDark
+                        labelColor = MatchMatePinkDark,
+                        leadingIconContentColor = MatchMatePinkDark
                     ),
-
-                    border =
-                        AssistChipDefaults.assistChipBorder(
-                            enabled = true,
-                            borderColor = MatchMatePink.copy(
-                                alpha = 0.35f
-                            )
+                    border = AssistChipDefaults.assistChipBorder(
+                        enabled = true,
+                        borderColor = MatchMatePink.copy(
+                            alpha = 0.35f
                         )
+                    )
                 )
+                // Contact information
 
-                AnimatedContent(
-                    targetState = showContactInfo,
+                AnimatedVisibility(
+                    visible = showContactInfo,
+                    enter = fadeIn(
+                        animationSpec = tween(220)
+                    ) + slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
 
-                    transitionSpec = {
-                        fadeIn(
-                            animationSpec = tween(200)
-                        ) togetherWith fadeOut(
-                            animationSpec = tween(150)
+                            stiffness = Spring.StiffnessMedium
+                        ),
+                        initialOffsetY = {
+                            -it / 4
+                        }),
+                    exit = fadeOut(
+                        animationSpec = tween(140)
+                    ) + slideOutVertically(
+                        animationSpec = tween(180),
+                        targetOffsetY = {
+                            -it / 5
+                        })
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ContactRow(
+                            icon = Icons.Default.Email, value = match.email ?: "Not available"
                         )
-                    },
-
-                    label = "contactInfo"
-                ) { visible ->
-
-                    if (visible) {
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp),
-
-                            verticalArrangement =
-                                Arrangement.spacedBy(8.dp)
-                        ) {
-
-                            ContactRow(
-                                icon = Icons.Default.Email,
-                                value =
-                                    match.email ?: "Not available"
-                            )
-
-                            ContactRow(
-                                icon = Icons.Default.Phone,
-                                value =
-                                    match.phone ?: "Not available"
-                            )
-                        }
+                        ContactRow(
+                            icon = Icons.Default.Phone, value = match.phone ?: "Not available"
+                        )
                     }
                 }
+                Spacer(modifier = Modifier.height(18.dp))
+                //Pending actions
 
-                Spacer(
-                    modifier = Modifier.height(18.dp)
-                )
-
-                /*
-                 * Pending actions
-                 */
                 if (match.status == MatchStatus.PENDING) {
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-
-                        horizontalArrangement =
-                            Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-
-                        /*
-                         * Decline
-                         */
+                        //Decline
                         OutlinedButton(
                             onClick = onDecline,
-
-                            modifier =
-                                Modifier.weight(1f),
-
-                            colors =
-                                ButtonDefaults.outlinedButtonColors(
-                                    containerColor =
-                                        MatchMateSurface,
-
-                                    contentColor =
-                                        MatchMateTextPrimary
-                                ),
-
-                            border =
-                                androidx.compose.foundation.BorderStroke(
-                                    width = 1.dp,
-                                    color = MatchMateDivider
-                                ),
-
-                            shape =
-                                RoundedCornerShape(20.dp)
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = MatchMateSurface,
+                                contentColor = MatchMateTextPrimary
+                            ),
+                            border = BorderStroke(
+                                width = 1.dp, color = MatchMateDivider
+                            ),
+                            shape = RoundedCornerShape(20.dp)
                         ) {
-
                             Icon(
-                                imageVector =
-                                    Icons.Default.Close,
-
+                                imageVector = Icons.Default.Close,
                                 contentDescription = null,
-
-                                modifier =
-                                    Modifier.size(18.dp),
-
+                                modifier = Modifier.size(18.dp),
                                 tint = MatchMateRed
                             )
-
-                            Spacer(
-                                modifier = Modifier.size(6.dp)
-                            )
-
-                            Text(
-                                text = "Decline"
-                            )
+                            Spacer(modifier = Modifier.size(6.dp))
+                            Text(text = "Decline")
                         }
+                        // Accept
 
-                        /*
-                         * Accept
-                         */
                         Button(
                             onClick = onAccept,
-
-                            modifier =
-                                Modifier.weight(1f),
-
-                            colors =
-                                ButtonDefaults.buttonColors(
-                                    containerColor =
-                                        MatchMatePink,
-
-                                    contentColor =
-                                        MatchMateSurface
-                                ),
-
-                            shape =
-                                RoundedCornerShape(20.dp)
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MatchMatePink,
+                                contentColor = MatchMateSurface
+                            ),
+                            shape = RoundedCornerShape(20.dp)
                         ) {
-
                             Icon(
-                                imageVector =
-                                    Icons.Default.Check,
-
+                                imageVector = Icons.Default.Check,
                                 contentDescription = null,
-
-                                modifier =
-                                    Modifier.size(18.dp)
+                                modifier = Modifier.size(18.dp)
                             )
-
                             Spacer(
                                 modifier = Modifier.size(6.dp)
                             )
-
                             Text(
                                 text = "Accept"
                             )
@@ -389,51 +306,32 @@ fun MatchCard(
 private fun StatusChip(
     status: MatchStatus
 ) {
-    val (
-        text,
-        containerColor,
-        contentColor
-    ) = when (status) {
-
+    val (text, containerColor, contentColor) = when (status) {
         MatchStatus.PENDING -> Triple(
-            "NEW MATCH",
-            MatchMateYellowSoft,
-            Color(0xFFA66A00)
+            "NEW MATCH", MatchMateYellowSoft, Color(0xFFA66A00)
         )
 
         MatchStatus.ACCEPTED -> Triple(
-            "✓ ACCEPTED",
-            MatchMateGreenSoft,
-            MatchMateGreen
+            "✓ ACCEPTED", MatchMateGreenSoft, MatchMateGreen
         )
 
         MatchStatus.DECLINED -> Triple(
-            "✕ DECLINED",
-            MatchMateRedSoft,
-            MatchMateRed
+            "✕ DECLINED", MatchMateRedSoft, MatchMateRed
         )
     }
 
     Surface(
         modifier = Modifier.padding(start = 8.dp),
-
         shape = RoundedCornerShape(50),
-
         color = containerColor
     ) {
-
         Text(
             text = text,
-
             modifier = Modifier.padding(
-                horizontal = 10.dp,
-                vertical = 6.dp
+                horizontal = 10.dp, vertical = 6.dp
             ),
-
             style = MaterialTheme.typography.labelSmall,
-
             fontWeight = FontWeight.SemiBold,
-
             color = contentColor
         )
     }
@@ -441,33 +339,22 @@ private fun StatusChip(
 
 @Composable
 private fun ContactRow(
-    icon: ImageVector,
-    value: String
+    icon: ImageVector, value: String
 ) {
     Row(
-        verticalAlignment =
-            Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
-
         Icon(
             imageVector = icon,
-
             contentDescription = null,
-
             modifier = Modifier.size(18.dp),
-
             tint = MatchMatePink
         )
 
         Text(
             text = value,
-
-            modifier =
-                Modifier.padding(start = 8.dp),
-
-            style =
-                MaterialTheme.typography.bodySmall,
-
+            modifier = Modifier.padding(start = 8.dp),
+            style = MaterialTheme.typography.bodySmall,
             color = MatchMateTextSecondary
         )
     }
