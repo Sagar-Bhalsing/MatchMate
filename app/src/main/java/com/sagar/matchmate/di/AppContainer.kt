@@ -11,7 +11,6 @@ import com.sagar.matchmate.domain.repository.MatchRepository
 class AppContainer(
     context: Context
 ) {
-
     private val database: MatchDatabase by lazy {
         Room.databaseBuilder(
                 context,
@@ -20,15 +19,12 @@ class AppContainer(
             ).fallbackToDestructiveMigration()
             .build()
     }
-
     private val randomUserApi by lazy {
         RetrofitProvider.randomUserApi
     }
-
     val networkMonitor: NetworkMonitor by lazy {
         NetworkMonitor(context)
     }
-
     val matchRepository: MatchRepository by lazy {
         MatchRepositoryImpl(
             api = randomUserApi,
