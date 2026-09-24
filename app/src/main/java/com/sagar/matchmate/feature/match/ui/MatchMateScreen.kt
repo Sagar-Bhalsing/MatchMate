@@ -55,6 +55,7 @@ import com.sagar.matchmate.ui.theme.MatchMateSurface
 import com.sagar.matchmate.ui.theme.MatchMateTextPrimary
 import com.sagar.matchmate.ui.theme.MatchMateTextSecondary
 import com.sagar.matchmate.ui.theme.MatchMateYellowSoft
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +88,23 @@ fun MatchMateScreen(
                         message = effect.message,
                         duration = SnackbarDuration.Short
                     )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is MatchMateEffect.ShowSnackbar -> {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    launch {
+                        snackbarHostState.showSnackbar(
+                            message = effect.message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 }
             }
         }
@@ -428,7 +446,16 @@ private fun InitialLoading() {
         }
     }
 }
+private suspend fun SnackbarHostState.showLatestSnackbar(
+    message: String
+) {
+    currentSnackbarData?.dismiss()
 
+    showSnackbar(
+        message = message,
+        duration = SnackbarDuration.Short
+    )
+}
 @Composable
 private fun ErrorState(
     message: String,
