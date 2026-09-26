@@ -22,6 +22,8 @@ val MatchMateSurface = Color.White
 
 val MatchMateTextPrimary = Color(0xFF1F1F23)
 val MatchMateTextSecondary = Color(0xFF6F6F76)
+
+val MatchMateTextTertiary = Color(0xFF9F9F9F)
 val MatchMateDivider = Color(0xFFEEE7E8)
 
 // Error
