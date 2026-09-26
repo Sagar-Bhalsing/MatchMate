@@ -1,46 +1,57 @@
 # MatchMate 💕
- 
+
 A modern matrimonial/match discovery Android application built using **Kotlin and Jetpack Compose**.
 
 The application fetches user profiles from the Random User API, allows users to accept or decline matches, persists match decisions locally, supports pagination, and continues to work with cached data when the device is offline.
 
 ---
 
+## 📱 APK Download
+
+For your convenience, you can download and install the latest APK directly from Google Drive:
+
+[Download MatchMate APK](https://drive.google.com/file/d/1x_-GLpfUUbySY1Phrc4jI0p8a_NJiR06/view?usp=sharing&utm_source=chatgpt.com)
+
+> **Note:** The APK is provided for testing and evaluation purposes.
+
+---
+
 ## ✨ Features
 
-- Discover match profiles
-- Accept or decline matches
-- Separate Accepted and Declined tabs
-- Filter matches by:
-  - All
-  - Men
-  - Women
-- Paginated profile loading
-- Pull/toolbar refresh
-- Offline cached data
-- Local persistence using Room
-- Pending local actions stored for synchronization
-- Loading, error, empty and offline states
-- Snackbar feedback after Accept/Decline actions
-- Modern dating-app inspired UI
-- Jetpack Compose UI
-- MVI-style state and intent handling
-- StateFlow-based reactive state management
+* Discover match profiles
+* Accept or decline matches
+* Separate Accepted and Declined tabs
+* Filter matches by:
+
+  * All
+  * Men
+  * Women
+* Paginated profile loading
+* Pull/toolbar refresh
+* Offline cached data
+* Local persistence using Room
+* Pending local actions stored for synchronization
+* Loading, error, empty and offline states
+* Snackbar feedback after Accept/Decline actions
+* Modern dating-app inspired UI
+* Jetpack Compose UI
+* MVI-style state and intent handling
+* StateFlow-based reactive state management
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Kotlin**
-- **Jetpack Compose**
-- **Material 3**
-- **Coroutines**
-- **StateFlow**
-- **Room**
-- **Retrofit**
-- **Gson**
-- **Coil**
-- **KSP**
+* **Kotlin**
+* **Jetpack Compose**
+* **Material 3**
+* **Coroutines**
+* **StateFlow**
+* **Room**
+* **Retrofit**
+* **Gson**
+* **Coil**
+* **KSP**
 
 ---
 
@@ -73,3 +84,4 @@ The project follows a layered architecture with an MVI-style presentation layer.
       │  Room    │ │ Retrofit │
       │ Database │ │   API    │
       └──────────┘ └──────────┘
+```
